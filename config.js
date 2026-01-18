@@ -582,39 +582,7 @@ function generateHTML() {
     </div>
     
     <script>
-        // Sample data for profiles
-        let profiles = [
-            {
-                id: 1,
-                profileName: "Default Shipping",
-                accountName: "Roambee_Engineering",
-                deviceType: "BSFlex",
-                gps: "ON",
-                wifi: "ON",
-                ble: "OFF",
-                ambient: "OFF",
-                shock: "OFF",
-                sensors: ["Temp"],
-                prfEnabled: "NO",
-                prfValue: 300,
-                sensorFreqValue: 300
-            },
-            {
-                id: 2,
-                profileName: "High Sensitivity",
-                accountName: "Roambee_Engineering",
-                deviceType: "BSFlex",
-                gps: "ON",
-                wifi: "ON",
-                ble: "ON",
-                ambient: "ON",
-                shock: "ON",
-                sensors: ["Temp", "Hum", "Amb"],
-                prfEnabled: "YES",
-                prfValue: 300,
-                sensorFreqValue: 300
-            }
-        ];
+    
         
         // DOM Elements
         const tableView = document.getElementById('tableView');
