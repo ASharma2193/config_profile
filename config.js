@@ -344,6 +344,43 @@ function generateHTML() {
         .sensor-info strong {
             color: #6245d9;
         }
+        
+        .bit-visualization {
+            background-color: #f0f7ff;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        .bit-row {
+            display: flex;
+            align-items: center;
+            margin: 3px 0;
+        }
+        
+        .bit-label {
+            width: 100px;
+            font-weight: bold;
+        }
+        
+        .bit-value {
+            width: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .bit-desc {
+            margin-left: 10px;
+            color: #666;
+        }
+        
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body>
@@ -497,7 +534,7 @@ function generateHTML() {
                                 </div>
                             </div>
                             <div id="shockManualCommand" class="manual-command">
-                                <input type="text" id="shockCommand" class="form-control" placeholder="Enter manual command for shock trigger">
+                                <input type="text" id="shockCommand" class="form-control" placeholder="Enter manual command for shock trigger (e.g., AT+MOTION=2,10,3600 & AT+VIBPARAM=1,0,160)">
                             </div>
                         </div>
                         
@@ -518,9 +555,56 @@ function generateHTML() {
                                 </div>
                             </div>
                             <div class="sensor-info">
-                                <strong>Note:</strong> Sensors use binary bit combination:<br>
-                                BIT0: Ambient Light, BIT1: Temperature, BIT2: Humidity<br>
-                                BIT3: Always 1, BIT4: Always 1, BIT5: Always 0, BIT6: Always 1, BIT7: Always 1
+                                <strong>Note:</strong> Sensors use 8-bit binary mask (MSB first):
+                                <div class="bit-visualization">
+                                    <div class="bit-row">
+                                        <div class="bit-label">BIT 7:</div>
+                                        <div class="bit-value">1</div>
+                                        <div class="bit-desc">(Always 1)</div>
+                                    </div>
+                                    <div class="bit-row">
+                                        <div class="bit-label">BIT 6:</div>
+                                        <div class="bit-value">1</div>
+                                        <div class="bit-desc">(Always 1)</div>
+                                    </div>
+                                    <div class="bit-row">
+                                        <div class="bit-label">BIT 5:</div>
+                                        <div class="bit-value">0</div>
+                                        <div class="bit-desc">(Always 0)</div>
+                                    </div>
+                                    <div class="bit-row">
+                                        <div class="bit-label">BIT 4:</div>
+                                        <div class="bit-value">1</div>
+                                        <div class="bit-desc">(Always 1)</div>
+                                    </div>
+                                    <div class="bit-row">
+                                        <div class="bit-label">BIT 3:</div>
+                                        <div class="bit-value">1</div>
+                                        <div class="bit-desc">(Always 1)</div>
+                                    </div>
+                                    <div class="bit-row">
+                                        <div class="bit-label">BIT 2:</div>
+                                        <div class="bit-value"><span id="bit2Value" class="highlight">0</span></div>
+                                        <div class="bit-desc">Humidity (1 if selected)</div>
+                                    </div>
+                                    <div class="bit-row">
+                                        <div class="bit-label">BIT 1:</div>
+                                        <div class="bit-value"><span id="bit1Value" class="highlight">0</span></div>
+                                        <div class="bit-desc">Temperature (1 if selected)</div>
+                                    </div>
+                                    <div class="bit-row">
+                                        <div class="bit-label">BIT 0:</div>
+                                        <div class="bit-value"><span id="bit0Value" class="highlight">0</span></div>
+                                        <div class="bit-desc">Ambient Light (1 if selected)</div>
+                                    </div>
+                                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd;">
+                                        <strong>Binary:</strong> <span id="binaryDisplay">11011</span>000
+                                        <br>
+                                        <strong>Decimal:</strong> <span id="decimalDisplay">216</span>
+                                        <br>
+                                        <strong>Command:</strong> AT+SENSORMASK=<span id="commandDisplay">216</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
@@ -552,6 +636,10 @@ function generateHTML() {
                                             <div class="info-text">Minimum allowed value: 300 seconds</div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="info-text">
+                                    <strong>Note:</strong> When PRF = Sensor Frequency: AT+TIMEGAP=0,PRF,1,PRF & AT+SAMPLEMODE=0,0<br>
+                                    When different: AT+TIMEGAP=0,PRF,1,SENSOR_FREQ & AT+SAMPLEMODE=1,1
                                 </div>
                             </div>
                         </div>
@@ -598,7 +686,7 @@ function generateHTML() {
                 ambientCommand: "AT+LIGHT=1,200,500",
                 shock: "ON",
                 shockCommand: "",
-                sensors: ["Temp", "Hum"],
+                sensors: ["Temp", "Hum", "Amb"],
                 prfEnabled: "YES",
                 prfValue: 300,
                 sensorFreqValue: 300
@@ -623,6 +711,14 @@ function generateHTML() {
         const shockManualCommand = document.getElementById('shockManualCommand');
         const prfRadios = document.querySelectorAll('input[name="prfEnabled"]');
         const prfOptions = document.getElementById('prfOptions');
+        
+        // Sensor bit display elements
+        const bit0Value = document.getElementById('bit0Value');
+        const bit1Value = document.getElementById('bit1Value');
+        const bit2Value = document.getElementById('bit2Value');
+        const binaryDisplay = document.getElementById('binaryDisplay');
+        const decimalDisplay = document.getElementById('decimalDisplay');
+        const commandDisplay = document.getElementById('commandDisplay');
         
         // State
         let isEditing = false;
@@ -668,6 +764,11 @@ function generateHTML() {
                     document.getElementById('sensorFreqValue').required = false;
                 }
             });
+        });
+        
+        // Update sensor bit visualization when checkboxes change
+        document.querySelectorAll('input[name="sensor"]').forEach(checkbox => {
+            checkbox.addEventListener('change', updateSensorBitDisplay);
         });
         
         // Functions
@@ -736,6 +837,9 @@ function generateHTML() {
                 prfOptions.classList.remove('active');
             }
             
+            // Update sensor bit display
+            updateSensorBitDisplay();
+            
             tableView.classList.add('hidden');
             formView.classList.remove('hidden');
         }
@@ -761,6 +865,9 @@ function generateHTML() {
             document.querySelector('input[name="ambient"][value="OFF"]').checked = true;
             document.querySelector('input[name="shock"][value="OFF"]').checked = true;
             document.querySelector('input[name="prfEnabled"][value="NO"]').checked = true;
+            
+            // Update sensor bit display
+            updateSensorBitDisplay();
         }
         
         function handleFormSubmit(e) {
@@ -851,24 +958,62 @@ function generateHTML() {
             }
         }
         
-        // Function to calculate sensor mask
+        // Function to calculate sensor mask CORRECTED
         function calculateSensorMask(sensors) {
-            let binaryString = '1101'; // BIT7, BIT6, BIT5, BIT4 (7=1, 6=1, 5=0, 4=1)
+            // BIT 0: Ambient Light (1 if selected)
+            const bit0 = sensors.includes('Amb') ? 1 : 0;
             
-            // BIT3: Always 1
-            binaryString = '1' + binaryString;
+            // BIT 1: Temperature (1 if selected)
+            const bit1 = sensors.includes('Temp') ? 1 : 0;
             
-            // BIT2: Humidity (1 if selected)
-            binaryString = (sensors.includes('Hum') ? '1' : '0') + binaryString;
+            // BIT 2: Humidity (1 if selected)
+            const bit2 = sensors.includes('Hum') ? 1 : 0;
             
-            // BIT1: Temperature (1 if selected)
-            binaryString = (sensors.includes('Temp') ? '1' : '0') + binaryString;
+            // BIT 3: Always 1
+            const bit3 = 1;
             
-            // BIT0: Ambient Light (1 if selected)
-            binaryString = (sensors.includes('Amb') ? '1' : '0') + binaryString;
+            // BIT 4: Always 1
+            const bit4 = 1;
+            
+            // BIT 5: Always 0
+            const bit5 = 0;
+            
+            // BIT 6: Always 1
+            const bit6 = 1;
+            
+            // BIT 7: Always 1
+            const bit7 = 1;
+            
+            // Create binary string (MSB first)
+            const binaryString = '' + bit7 + bit6 + bit5 + bit4 + bit3 + bit2 + bit1 + bit0;
             
             // Convert binary to decimal
             return parseInt(binaryString, 2);
+        }
+        
+        // Update sensor bit display
+        function updateSensorBitDisplay() {
+            const sensors = [];
+            document.querySelectorAll('input[name="sensor"]:checked').forEach(checkbox => {
+                sensors.push(checkbox.value);
+            });
+            
+            // Update bit values
+            bit0Value.textContent = sensors.includes('Amb') ? '1' : '0';
+            bit1Value.textContent = sensors.includes('Temp') ? '1' : '0';
+            bit2Value.textContent = sensors.includes('Hum') ? '1' : '0';
+            
+            // Calculate and update binary, decimal, and command
+            const sensorMask = calculateSensorMask(sensors);
+            const binary = sensorMask.toString(2).padStart(8, '0');
+            
+            // Separate the binary string for display
+            const fixedBits = binary.substring(0, 5); // Bits 7-3 (11011)
+            const configurableBits = binary.substring(5); // Bits 2-0
+            
+            binaryDisplay.textContent = fixedBits;
+            decimalDisplay.textContent = sensorMask;
+            commandDisplay.textContent = sensorMask;
         }
         
         function generateCommandSet(profile) {
@@ -897,10 +1042,9 @@ function generateHTML() {
                 commands.push(profile.ambientCommand);
             }
             
-            // Add Shock command
+            // Add Shock command as SINGLE command
             if (profile.shock === 'ON') {
-                commands.push('AT+MOTION=2,10,3600 & AT+VIBPARAM=1,0,160'');
-                
+                commands.push('AT+MOTION=2,10,3600 & AT+VIBPARAM=1,0,160');
             } else if (profile.shock === 'OFF') {
                 commands.push('AT+VIBPARAM=0,0,160');
             } else if (profile.shock === 'MANUAL' && profile.shockCommand) {
@@ -913,14 +1057,12 @@ function generateHTML() {
                 commands.push('AT+SENSORMASK=' + sensorMask);
             }
             
-            // Add PRF commands if enabled
+            // Add PRF commands as SINGLE command if enabled
             if (profile.prfEnabled === 'YES') {
                 if (profile.prfValue === profile.sensorFreqValue) {
-                    commands.push('AT+TIMEGAP=0,' + profile.prfValue + ',1,' + profile.prfValue & 'AT+SAMPLEMODE=0,0' );
-                   
+                    commands.push('AT+TIMEGAP=0,' + profile.prfValue + ',1,' + profile.prfValue + ' & AT+SAMPLEMODE=0,0');
                 } else {
-                    commands.push('AT+TIMEGAP=0,' + profile.prfValue + ',1,' + profile.sensorFreqValue & 'AT+SAMPLEMODE=1,1');
-                    
+                    commands.push('AT+TIMEGAP=0,' + profile.prfValue + ',1,' + profile.sensorFreqValue + ' & AT+SAMPLEMODE=1,1');
                 }
             }
             
@@ -952,9 +1094,10 @@ function generateHTML() {
             
             // Add Sensors config
             if (profile.sensors.length > 0) {
-                configs.push('Sensors: ' + profile.sensors.join(', '));
+                const sensorMask = calculateSensorMask(profile.sensors);
+                configs.push('Sensors: ' + profile.sensors.join(', ') + ' (Mask: ' + sensorMask + ')');
             } else {
-                configs.push('Sensors: None');
+                configs.push('Sensors: None (Mask: 216)');
             }
             
             // Add PRF config if enabled
@@ -1025,6 +1168,10 @@ function generateHTML() {
         
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize sensor bit display
+            updateSensorBitDisplay();
+            
+            // Render profiles table
             renderProfilesTable();
         });
     </script>
