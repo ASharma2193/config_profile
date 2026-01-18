@@ -1030,3 +1030,4 @@ server.listen(PORT, () => {
 
 // Export the function for module systems
 module.exports = { generateHTML, createConfigProfileApp };
+
