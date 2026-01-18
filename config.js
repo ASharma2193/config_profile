@@ -582,7 +582,25 @@ function generateHTML() {
     </div>
     
     <script>
-    
+        // Sample data for profiles
+        let profiles = [
+            {
+                id: 1,
+                profileName: "Default Shipping",
+                accountName: "Roambee_Engineering",
+                deviceType: "BSFlex",
+                gps: "ON",
+                wifi: "ON",
+                ble: "OFF",
+                ambient: "OFF",
+                shock: "OFF",
+                sensors: ["Temp"],
+                prfEnabled: "NO",
+                prfValue: 300,
+                sensorFreqValue: 300
+            }  sensorFreqValue: 300
+          
+        ];
         
         // DOM Elements
         const tableView = document.getElementById('tableView');
@@ -835,7 +853,7 @@ function generateHTML() {
             // Last bit is always 0 (Temp&Humi Trigger - not used)
             const lastBit = '0';
             
-            return `AT+SENSORSTATUS=${gpsBit},${wifiBit},${bleBit},${ambientBit},${shockBit},${lastBit}`;
+            return 'AT+SENSORSTATUS=' + gpsBit + ',' + wifiBit + ',' + bleBit + ',' + ambientBit + ',' + shockBit + ',' + lastBit;
         }
         
         function generateCommandSet(profile) {
@@ -1030,4 +1048,3 @@ server.listen(PORT, () => {
 
 // Export the function for module systems
 module.exports = { generateHTML, createConfigProfileApp };
-
