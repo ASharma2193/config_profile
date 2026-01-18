@@ -866,3 +866,26 @@ if (require.main === module) {
 
 // Export the function for module systems
 module.exports = { generateHTML, createConfigProfileApp };
+
+// Start a simple HTTP server for Render
+const http = require('http');
+const PORT = process.env.PORT || 3000;
+
+const server = http.createServer((req, res) => {
+  if (req.url === '/') {
+    const html = generateHTML();
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(html);
+  } else {
+    res.writeHead(404);
+    res.end('Not found');
+  }
+});
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log('HTML content will be served at the root path');
+  
+  // Also create the HTML file
+  createConfigProfileApp();
+});
