@@ -1,0 +1,8 @@
+{
+  "name": "config-profile-app",
+  "version": "1.0.0",
+  "main": "config.js",
+  "scripts": {
+    "start": "node config.js"
+  }
+}
