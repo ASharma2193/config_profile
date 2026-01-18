@@ -165,7 +165,7 @@ function generateHTML() {
         
         /* Command Set Styles - Modified for black text */
         .command-set {
-            max-width: 350px;
+            max-width: 400px;
         }
         
         .command-tag {
@@ -345,7 +345,14 @@ function generateHTML() {
             color: #6245d9;
         }
         
-        
+        .command-info {
+            background-color: #f0f7ff;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 5px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+        }
     </style>
 </head>
 <body>
@@ -434,6 +441,20 @@ function generateHTML() {
                         <label>Configuration Selection</label>
                         
                         <div class="form-group">
+                            <label>GPS</label>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" id="gpsOn" name="gps" value="ON" checked>
+                                    <label for="gpsOn">ON</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="gpsOff" name="gps" value="OFF">
+                                    <label for="gpsOff">OFF</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
                             <label>WiFi</label>
                             <div class="radio-group">
                                 <div class="radio-option">
@@ -472,13 +493,9 @@ function generateHTML() {
                                     <input type="radio" id="ambientOn" name="ambient" value="ON">
                                     <label for="ambientOn">ON</label>
                                 </div>
-                                <div class="radio-option">
-                                    <input type="radio" id="ambientManual" name="ambient" value="MANUAL">
-                                    <label for="ambientManual">Manual Command</label>
-                                </div>
                             </div>
-                            <div id="ambientManualCommand" class="manual-command">
-                                <input type="text" id="ambientCommand" class="form-control" placeholder="Enter manual command for ambient trigger (e.g., AT+LIGHT=1,172,500)">
+                            <div class="command-info">
+                                When Ambient Trigger is ON: AT+LIGHT=1,516,300 will be added
                             </div>
                         </div>
                         
@@ -493,13 +510,9 @@ function generateHTML() {
                                     <input type="radio" id="shockOn" name="shock" value="ON">
                                     <label for="shockOn">ON</label>
                                 </div>
-                                <div class="radio-option">
-                                    <input type="radio" id="shockManual" name="shock" value="MANUAL">
-                                    <label for="shockManual">Manual Command</label>
-                                </div>
                             </div>
-                            <div id="shockManualCommand" class="manual-command">
-                                <input type="text" id="shockCommand" class="form-control" placeholder="Enter manual command for shock trigger (e.g., AT+MOTION=2,10,3600 & AT+VIBPARAM=1,0,160)">
+                            <div class="command-info">
+                                When Shock Trigger is ON: AT+MOTION=2,10,3600 & AT+VIBPARAM=1,0,160 will be added
                             </div>
                         </div>
                         
@@ -519,8 +532,9 @@ function generateHTML() {
                                     <label for="sensorHum">Humidity</label>
                                 </div>
                             </div>
-                        <div class="sensor-info">
-                            <strong>Note:</strong> Sensors use 8-bit binary mask. The command AT+SENSORMASK will be generated automatically based on your selection.
+                            <div class="sensor-info">
+                                <strong>Note:</strong> AT+SENSORMASK command will be generated based on sensor selection
+                            </div>
                         </div>
                         
                         <div class="form-group">
@@ -552,7 +566,6 @@ function generateHTML() {
                                         </div>
                                     </div>
                                 </div>
-                                
                             </div>
                         </div>
                     </div>
@@ -576,12 +589,11 @@ function generateHTML() {
                 profileName: "Default Shipping",
                 accountName: "Roambee_Engineering",
                 deviceType: "BSFlex",
+                gps: "ON",
                 wifi: "ON",
                 ble: "OFF",
                 ambient: "OFF",
-                ambientCommand: "",
                 shock: "OFF",
-                shockCommand: "",
                 sensors: ["Temp"],
                 prfEnabled: "NO",
                 prfValue: 300,
@@ -592,12 +604,11 @@ function generateHTML() {
                 profileName: "High Sensitivity",
                 accountName: "Roambee_Engineering",
                 deviceType: "BSFlex",
+                gps: "ON",
                 wifi: "ON",
                 ble: "ON",
-                ambient: "MANUAL",
-                ambientCommand: "AT+LIGHT=1,200,500",
+                ambient: "ON",
                 shock: "ON",
-                shockCommand: "",
                 sensors: ["Temp", "Hum", "Amb"],
                 prfEnabled: "YES",
                 prfValue: 300,
@@ -616,21 +627,9 @@ function generateHTML() {
         const emptyState = document.getElementById('emptyState');
         const formTitle = document.getElementById('formTitle');
         
-        // Manual command toggles
-        const ambientRadios = document.querySelectorAll('input[name="ambient"]');
-        const ambientManualCommand = document.getElementById('ambientManualCommand');
-        const shockRadios = document.querySelectorAll('input[name="shock"]');
-        const shockManualCommand = document.getElementById('shockManualCommand');
+        // Manual command toggles removed
         const prfRadios = document.querySelectorAll('input[name="prfEnabled"]');
         const prfOptions = document.getElementById('prfOptions');
-        
-        // Sensor bit display elements
-        const bit0Value = document.getElementById('bit0Value');
-        const bit1Value = document.getElementById('bit1Value');
-        const bit2Value = document.getElementById('bit2Value');
-        const binaryDisplay = document.getElementById('binaryDisplay');
-        const decimalDisplay = document.getElementById('decimalDisplay');
-        const commandDisplay = document.getElementById('commandDisplay');
         
         // State
         let isEditing = false;
@@ -641,27 +640,6 @@ function generateHTML() {
         backToListBtn.addEventListener('click', showTable);
         cancelBtn.addEventListener('click', showTable);
         configProfileForm.addEventListener('submit', handleFormSubmit);
-        
-        // Toggle manual command fields
-        ambientRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.value === 'MANUAL') {
-                    ambientManualCommand.classList.add('active');
-                } else {
-                    ambientManualCommand.classList.remove('active');
-                }
-            });
-        });
-        
-        shockRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.value === 'MANUAL') {
-                    shockManualCommand.classList.add('active');
-                } else {
-                    shockManualCommand.classList.remove('active');
-                }
-            });
-        });
         
         // Toggle PRF options
         prfRadios.forEach(radio => {
@@ -678,7 +656,6 @@ function generateHTML() {
             });
         });
         
-                
         // Functions
         function showCreateForm() {
             isEditing = false;
@@ -706,6 +683,9 @@ function generateHTML() {
             document.getElementById('accountName').value = profile.accountName;
             document.getElementById('deviceType').value = profile.deviceType;
             
+            // Set GPS radio
+            document.querySelector('input[name="gps"][value="' + profile.gps + '"]').checked = true;
+            
             // Set WiFi radio
             document.querySelector('input[name="wifi"][value="' + profile.wifi + '"]').checked = true;
             
@@ -714,21 +694,9 @@ function generateHTML() {
             
             // Set Ambient radio
             document.querySelector('input[name="ambient"][value="' + profile.ambient + '"]').checked = true;
-            if (profile.ambient === 'MANUAL') {
-                ambientManualCommand.classList.add('active');
-                document.getElementById('ambientCommand').value = profile.ambientCommand;
-            } else {
-                ambientManualCommand.classList.remove('active');
-            }
             
             // Set Shock radio
             document.querySelector('input[name="shock"][value="' + profile.shock + '"]').checked = true;
-            if (profile.shock === 'MANUAL') {
-                shockManualCommand.classList.add('active');
-                document.getElementById('shockCommand').value = profile.shockCommand;
-            } else {
-                shockManualCommand.classList.remove('active');
-            }
             
             // Set Sensors checkboxes
             document.querySelectorAll('input[name="sensor"]').forEach(checkbox => {
@@ -745,8 +713,6 @@ function generateHTML() {
                 prfOptions.classList.remove('active');
             }
             
-           
-            
             tableView.classList.add('hidden');
             formView.classList.remove('hidden');
         }
@@ -759,21 +725,16 @@ function generateHTML() {
         
         function resetForm() {
             configProfileForm.reset();
-            ambientManualCommand.classList.remove('active');
-            shockManualCommand.classList.remove('active');
             prfOptions.classList.remove('active');
-            document.getElementById('ambientCommand').value = '';
-            document.getElementById('shockCommand').value = '';
             document.getElementById('prfValue').value = '300';
             document.getElementById('sensorFreqValue').value = '300';
             document.getElementById('deviceType').value = 'BSFlex';
+            document.querySelector('input[name="gps"][value="ON"]').checked = true;
             document.querySelector('input[name="wifi"][value="ON"]').checked = true;
             document.querySelector('input[name="ble"][value="OFF"]').checked = true;
             document.querySelector('input[name="ambient"][value="OFF"]').checked = true;
             document.querySelector('input[name="shock"][value="OFF"]').checked = true;
             document.querySelector('input[name="prfEnabled"][value="NO"]').checked = true;
-            
-            
         }
         
         function handleFormSubmit(e) {
@@ -783,12 +744,11 @@ function generateHTML() {
             const profileName = document.getElementById('profileName').value;
             const accountName = document.getElementById('accountName').value;
             const deviceType = document.getElementById('deviceType').value;
+            const gps = document.querySelector('input[name="gps"]:checked').value;
             const wifi = document.querySelector('input[name="wifi"]:checked').value;
             const ble = document.querySelector('input[name="ble"]:checked').value;
             const ambient = document.querySelector('input[name="ambient"]:checked').value;
-            const ambientCommand = ambient === 'MANUAL' ? document.getElementById('ambientCommand').value : '';
             const shock = document.querySelector('input[name="shock"]:checked').value;
-            const shockCommand = shock === 'MANUAL' ? document.getElementById('shockCommand').value : '';
             
             // Get selected sensors
             const sensorCheckboxes = document.querySelectorAll('input[name="sensor"]:checked');
@@ -816,12 +776,11 @@ function generateHTML() {
                 profileName,
                 accountName,
                 deviceType,
+                gps,
                 wifi,
                 ble,
                 ambient,
-                ambientCommand,
                 shock,
-                shockCommand,
                 sensors,
                 prfEnabled,
                 prfValue,
@@ -864,7 +823,7 @@ function generateHTML() {
             }
         }
         
-        // Function to calculate sensor mask CORRECTED
+        // Function to calculate sensor mask
         function calculateSensorMask(sensors) {
             // BIT 0: Ambient Light (1 if selected)
             const bit0 = sensors.includes('Amb') ? 1 : 0;
@@ -897,73 +856,43 @@ function generateHTML() {
             return parseInt(binaryString, 2);
         }
         
-        // Update sensor bit display
-        function updateSensorBitDisplay() {
-            const sensors = [];
-            document.querySelectorAll('input[name="sensor"]:checked').forEach(checkbox => {
-                sensors.push(checkbox.value);
-            });
+        // Function to generate AT+SENSORSTATUS command
+        function generateSensorStatusCommand(profile) {
+            // Convert ON/OFF to 1/0
+            const gpsBit = profile.gps === 'ON' ? '1' : '0';
+            const wifiBit = profile.wifi === 'ON' ? '1' : '0';
+            const bleBit = profile.ble === 'ON' ? '1' : '0';
+            const ambientBit = profile.ambient === 'ON' ? '1' : '0';
+            const shockBit = profile.shock === 'ON' ? '1' : '0';
+            // Last bit is always 0 (Temp&Humi Trigger - not used)
+            const lastBit = '0';
             
-            // Update bit values
-            bit0Value.textContent = sensors.includes('Amb') ? '1' : '0';
-            bit1Value.textContent = sensors.includes('Temp') ? '1' : '0';
-            bit2Value.textContent = sensors.includes('Hum') ? '1' : '0';
-            
-            // Calculate and update binary, decimal, and command
-            const sensorMask = calculateSensorMask(sensors);
-            const binary = sensorMask.toString(2).padStart(8, '0');
-            
-            // Separate the binary string for display
-            const fixedBits = binary.substring(0, 5); // Bits 7-3 (11011)
-            const configurableBits = binary.substring(5); // Bits 2-0
-            
-            binaryDisplay.textContent = fixedBits;
-            decimalDisplay.textContent = sensorMask;
-            commandDisplay.textContent = sensorMask;
+            return `AT+SENSORSTATUS=${gpsBit},${wifiBit},${bleBit},${ambientBit},${shockBit},${lastBit}`;
         }
         
         function generateCommandSet(profile) {
             const commands = [];
             
-            // Add WiFi command
-            if (profile.wifi === 'ON') {
-                commands.push('AT+WIFIENABLE=1,10');
-            } else {
-                commands.push('AT+WIFIENABLE=0,10');
-            }
+            // Add AT+SENSORSTATUS command
+            commands.push(generateSensorStatusCommand(profile));
             
-            // Add BLE command
-            if (profile.ble === 'ON') {
-                commands.push('AT+BTENABLE=1,30');
-            } else {
-                commands.push('AT+BTENABLE=0,30');
-            }
-            
-            // Add Ambient command
+            // Add Ambient Light command if ON
             if (profile.ambient === 'ON') {
-                commands.push('AT+LIGHT=1,172,300');
-            } else if (profile.ambient === 'OFF') {
-                commands.push('AT+LIGHT=0,172,300');
-            } else if (profile.ambient === 'MANUAL' && profile.ambientCommand) {
-                commands.push(profile.ambientCommand);
+                commands.push('AT+LIGHT=1,516,300');
             }
             
-            // Add Shock command as SINGLE command
+            // Add Shock command if ON
             if (profile.shock === 'ON') {
                 commands.push('AT+MOTION=2,10,3600 & AT+VIBPARAM=1,0,160');
-            } else if (profile.shock === 'OFF') {
-                commands.push('AT+VIBPARAM=0,0,160');
-            } else if (profile.shock === 'MANUAL' && profile.shockCommand) {
-                commands.push(profile.shockCommand);
             }
             
-            // Add Sensor command
+            // Add Sensor mask command if sensors are selected
             if (profile.sensors.length > 0) {
                 const sensorMask = calculateSensorMask(profile.sensors);
                 commands.push('AT+SENSORMASK=' + sensorMask);
             }
             
-            // Add PRF commands as SINGLE command if enabled
+            // Add PRF commands if enabled
             if (profile.prfEnabled === 'YES') {
                 if (profile.prfValue === profile.sensorFreqValue) {
                     commands.push('AT+TIMEGAP=0,' + profile.prfValue + ',1,' + profile.prfValue + ' & AT+SAMPLEMODE=0,0');
@@ -978,6 +907,9 @@ function generateHTML() {
         function generateConfigSet(profile) {
             const configs = [];
             
+            // Add GPS config
+            configs.push('GPS: ' + profile.gps);
+            
             // Add WiFi config
             configs.push('WiFi: ' + profile.wifi);
             
@@ -985,18 +917,10 @@ function generateHTML() {
             configs.push('BLE: ' + profile.ble);
             
             // Add Ambient config
-            if (profile.ambient === 'MANUAL') {
-                configs.push('Ambient: Manual Command');
-            } else {
-                configs.push('Ambient: ' + profile.ambient);
-            }
+            configs.push('Ambient: ' + profile.ambient);
             
             // Add Shock config
-            if (profile.shock === 'MANUAL') {
-                configs.push('Shock: Manual Command');
-            } else {
-                configs.push('Shock: ' + profile.shock);
-            }
+            configs.push('Shock: ' + profile.shock);
             
             // Add Sensors config
             if (profile.sensors.length > 0) {
@@ -1074,7 +998,6 @@ function generateHTML() {
         
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-           
             // Render profiles table
             renderProfilesTable();
         });
