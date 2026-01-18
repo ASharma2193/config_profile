@@ -345,42 +345,7 @@ function generateHTML() {
             color: #6245d9;
         }
         
-        .bit-visualization {
-            background-color: #f0f7ff;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-        }
         
-        .bit-row {
-            display: flex;
-            align-items: center;
-            margin: 3px 0;
-        }
-        
-        .bit-label {
-            width: 100px;
-            font-weight: bold;
-        }
-        
-        .bit-value {
-            width: 30px;
-            text-align: center;
-            font-weight: bold;
-        }
-        
-        .bit-desc {
-            margin-left: 10px;
-            color: #666;
-        }
-        
-        .highlight {
-            background-color: #fff3cd;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
     </style>
 </head>
 <body>
@@ -554,58 +519,8 @@ function generateHTML() {
                                     <label for="sensorHum">Humidity</label>
                                 </div>
                             </div>
-                            <div class="sensor-info">
-                                <strong>Note:</strong> Sensors use 8-bit binary mask (MSB first):
-                                <div class="bit-visualization">
-                                    <div class="bit-row">
-                                        <div class="bit-label">BIT 7:</div>
-                                        <div class="bit-value">1</div>
-                                        <div class="bit-desc">(Always 1)</div>
-                                    </div>
-                                    <div class="bit-row">
-                                        <div class="bit-label">BIT 6:</div>
-                                        <div class="bit-value">1</div>
-                                        <div class="bit-desc">(Always 1)</div>
-                                    </div>
-                                    <div class="bit-row">
-                                        <div class="bit-label">BIT 5:</div>
-                                        <div class="bit-value">0</div>
-                                        <div class="bit-desc">(Always 0)</div>
-                                    </div>
-                                    <div class="bit-row">
-                                        <div class="bit-label">BIT 4:</div>
-                                        <div class="bit-value">1</div>
-                                        <div class="bit-desc">(Always 1)</div>
-                                    </div>
-                                    <div class="bit-row">
-                                        <div class="bit-label">BIT 3:</div>
-                                        <div class="bit-value">1</div>
-                                        <div class="bit-desc">(Always 1)</div>
-                                    </div>
-                                    <div class="bit-row">
-                                        <div class="bit-label">BIT 2:</div>
-                                        <div class="bit-value"><span id="bit2Value" class="highlight">0</span></div>
-                                        <div class="bit-desc">Humidity (1 if selected)</div>
-                                    </div>
-                                    <div class="bit-row">
-                                        <div class="bit-label">BIT 1:</div>
-                                        <div class="bit-value"><span id="bit1Value" class="highlight">0</span></div>
-                                        <div class="bit-desc">Temperature (1 if selected)</div>
-                                    </div>
-                                    <div class="bit-row">
-                                        <div class="bit-label">BIT 0:</div>
-                                        <div class="bit-value"><span id="bit0Value" class="highlight">0</span></div>
-                                        <div class="bit-desc">Ambient Light (1 if selected)</div>
-                                    </div>
-                                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd;">
-                                        <strong>Binary:</strong> <span id="binaryDisplay">11011</span>000
-                                        <br>
-                                        <strong>Decimal:</strong> <span id="decimalDisplay">216</span>
-                                        <br>
-                                        <strong>Command:</strong> AT+SENSORMASK=<span id="commandDisplay">216</span>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="sensor-info">
+                            <strong>Note:</strong> Sensors use 8-bit binary mask. The command AT+SENSORMASK will be generated automatically based on your selection.
                         </div>
                         
                         <div class="form-group">
@@ -766,11 +681,7 @@ function generateHTML() {
             });
         });
         
-        // Update sensor bit visualization when checkboxes change
-        document.querySelectorAll('input[name="sensor"]').forEach(checkbox => {
-            checkbox.addEventListener('change', updateSensorBitDisplay);
-        });
-        
+                
         // Functions
         function showCreateForm() {
             isEditing = false;
@@ -837,8 +748,7 @@ function generateHTML() {
                 prfOptions.classList.remove('active');
             }
             
-            // Update sensor bit display
-            updateSensorBitDisplay();
+           
             
             tableView.classList.add('hidden');
             formView.classList.remove('hidden');
@@ -866,8 +776,7 @@ function generateHTML() {
             document.querySelector('input[name="shock"][value="OFF"]').checked = true;
             document.querySelector('input[name="prfEnabled"][value="NO"]').checked = true;
             
-            // Update sensor bit display
-            updateSensorBitDisplay();
+            
         }
         
         function handleFormSubmit(e) {
@@ -1168,9 +1077,7 @@ function generateHTML() {
         
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize sensor bit display
-            updateSensorBitDisplay();
-            
+           
             // Render profiles table
             renderProfilesTable();
         });
