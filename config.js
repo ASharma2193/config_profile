@@ -853,7 +853,7 @@ function generateHTML() {
         
         // Function to calculate sensor mask
         function calculateSensorMask(sensors) {
-            let binaryString = '1111'; // BIT7, BIT6, BIT5, BIT4 (7=1, 6=1, 5=0, 4=1)
+            let binaryString = '1101'; // BIT7, BIT6, BIT5, BIT4 (7=1, 6=1, 5=0, 4=1)
             
             // BIT3: Always 1
             binaryString = '1' + binaryString;
@@ -899,8 +899,8 @@ function generateHTML() {
             
             // Add Shock command
             if (profile.shock === 'ON') {
-                commands.push('AT+MOTION=2,10,3600');
-                commands.push('AT+VIBPARAM=1,0,160');
+                commands.push('AT+MOTION=2,10,3600 & AT+VIBPARAM=1,0,160'');
+                
             } else if (profile.shock === 'OFF') {
                 commands.push('AT+VIBPARAM=0,0,160');
             } else if (profile.shock === 'MANUAL' && profile.shockCommand) {
@@ -916,11 +916,11 @@ function generateHTML() {
             // Add PRF commands if enabled
             if (profile.prfEnabled === 'YES') {
                 if (profile.prfValue === profile.sensorFreqValue) {
-                    commands.push('AT+TIMEGAP=0,' + profile.prfValue + ',1,' + profile.prfValue);
-                    commands.push('AT+SAMPLEMODE=0,0');
+                    commands.push('AT+TIMEGAP=0,' + profile.prfValue + ',1,' + profile.prfValue & 'AT+SAMPLEMODE=0,0' );
+                   
                 } else {
-                    commands.push('AT+TIMEGAP=0,' + profile.prfValue + ',1,' + profile.sensorFreqValue);
-                    commands.push('AT+SAMPLEMODE=1,1');
+                    commands.push('AT+TIMEGAP=0,' + profile.prfValue + ',1,' + profile.sensorFreqValue & 'AT+SAMPLEMODE=1,1');
+                    
                 }
             }
             
