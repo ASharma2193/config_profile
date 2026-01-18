@@ -552,10 +552,7 @@ function generateHTML() {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="info-text">
-                                    <strong>Note:</strong> When PRF = Sensor Frequency: AT+TIMEGAP=0,PRF,1,PRF & AT+SAMPLEMODE=0,0<br>
-                                    When different: AT+TIMEGAP=0,PRF,1,SENSOR_FREQ & AT+SAMPLEMODE=1,1
-                                </div>
+                                
                             </div>
                         </div>
                     </div>
