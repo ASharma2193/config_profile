@@ -51,7 +51,7 @@ function generateHTML() {
         /* Main Content Styles */
         .main-content {
             padding: 25px;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
         
@@ -119,7 +119,7 @@ function generateHTML() {
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1000px;
+            min-width: 1200px;
         }
         
         thead {
@@ -163,36 +163,39 @@ function generateHTML() {
             background-color: rgba(231, 76, 60, 0.1);
         }
         
-        /* Command Set Styles */
+        /* Command Set Styles - Modified for black text */
         .command-set {
-            max-width: 300px;
+            max-width: 350px;
         }
         
         .command-tag {
-            display: inline-block;
-            background-color: #eef2ff;
-            color: #6245d9;
-            padding: 4px 10px;
+            display: block;
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 6px 10px;
             border-radius: 4px;
             font-size: 12px;
             font-weight: 500;
-            margin: 2px;
-            white-space: nowrap;
+            margin: 4px 2px;
+            border-left: 3px solid #6245d9;
+            font-family: 'Courier New', monospace;
         }
         
-        .command-tag.ambient {
-            background-color: #e0f7fa;
-            color: #006064;
+        /* Config Set Styles */
+        .config-set {
+            max-width: 250px;
         }
         
-        .command-tag.shock {
-            background-color: #fff3e0;
-            color: #e65100;
-        }
-        
-        .command-tag.sensor {
-            background-color: #e8f5e9;
-            color: #1b5e20;
+        .config-tag {
+            display: block;
+            background-color: #f0f7ff;
+            color: #333;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 4px 2px;
+            border-left: 3px solid #34c759;
         }
         
         /* Form Styles */
@@ -201,7 +204,7 @@ function generateHTML() {
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             padding: 30px;
-            max-width: 800px;
+            max-width: 900px;
             margin: 20px auto 0;
         }
         
@@ -245,6 +248,10 @@ function generateHTML() {
             outline: none;
         }
         
+        select.form-control {
+            cursor: pointer;
+        }
+        
         .radio-group, .checkbox-group {
             display: flex;
             gap: 20px;
@@ -273,6 +280,15 @@ function generateHTML() {
             display: block;
         }
         
+        .prf-options {
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .prf-options.active {
+            display: block;
+        }
+        
         .form-actions {
             display: flex;
             justify-content: flex-end;
@@ -280,6 +296,15 @@ function generateHTML() {
             margin-top: 30px;
             padding-top: 20px;
             border-top: 1px solid #eee;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-col {
+            flex: 1;
         }
         
         /* Utility Classes */
@@ -300,6 +325,24 @@ function generateHTML() {
             font-size: 40px;
             margin-bottom: 15px;
             color: #ccc;
+        }
+        
+        .info-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .sensor-info {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        
+        .sensor-info strong {
+            color: #6245d9;
         }
     </style>
 </head>
@@ -329,6 +372,7 @@ function generateHTML() {
                         <tr>
                             <th>PROFILE NAME</th>
                             <th>ACCOUNT NAME</th>
+                            <th>DEVICE TYPE</th>
                             <th>CONFIGURATIONS</th>
                             <th>COMMAND SET</th>
                             <th>ACTIONS</th>
@@ -358,14 +402,30 @@ function generateHTML() {
             
             <div class="form-container">
                 <form id="configProfileForm">
-                    <div class="form-group">
-                        <label for="profileName">Config Profile Name *</label>
-                        <input type="text" id="profileName" class="form-control" placeholder="Enter profile name" required>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="profileName">Config Profile Name *</label>
+                                <input type="text" id="profileName" class="form-control" placeholder="Enter profile name" required>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="accountName">Account Name *</label>
+                                <input type="text" id="accountName" class="form-control" placeholder="Enter account name" required>
+                            </div>
+                        </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="accountName">Account Name *</label>
-                        <input type="text" id="accountName" class="form-control" placeholder="Enter account name" required>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="deviceType">Device Type *</label>
+                                <select id="deviceType" class="form-control" required>
+                                    <option value="BSFlex">BSFlex</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -416,7 +476,7 @@ function generateHTML() {
                                 </div>
                             </div>
                             <div id="ambientManualCommand" class="manual-command">
-                                <input type="text" id="ambientCommand" class="form-control" placeholder="Enter manual command for ambient trigger">
+                                <input type="text" id="ambientCommand" class="form-control" placeholder="Enter manual command for ambient trigger (e.g., AT+LIGHT=1,172,500)">
                             </div>
                         </div>
                         
@@ -445,6 +505,10 @@ function generateHTML() {
                             <label>Sensor Enable</label>
                             <div class="checkbox-options">
                                 <div class="checkbox-option">
+                                    <input type="checkbox" id="sensorAmb" name="sensor" value="Amb">
+                                    <label for="sensorAmb">Ambient Light</label>
+                                </div>
+                                <div class="checkbox-option">
                                     <input type="checkbox" id="sensorTemp" name="sensor" value="Temp">
                                     <label for="sensorTemp">Temperature</label>
                                 </div>
@@ -452,21 +516,44 @@ function generateHTML() {
                                     <input type="checkbox" id="sensorHum" name="sensor" value="Hum">
                                     <label for="sensorHum">Humidity</label>
                                 </div>
-                                <div class="checkbox-option">
-                                    <input type="checkbox" id="sensorAmb" name="sensor" value="Amb">
-                                    <label for="sensorAmb">Ambient Light</label>
-                                </div>
+                            </div>
+                            <div class="sensor-info">
+                                <strong>Note:</strong> Sensors use binary bit combination:<br>
+                                BIT0: Ambient Light, BIT1: Temperature, BIT2: Humidity<br>
+                                BIT3: Always 1, BIT4: Always 1, BIT5: Always 0, BIT6: Always 1, BIT7: Always 1
                             </div>
                         </div>
                         
                         <div class="form-group">
-                            <label for="prf">PRF (in seconds) *</label>
-                            <input type="number" id="prf" class="form-control" placeholder="Enter PRF in seconds" min="1" value="60" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="sensorSampling">Sensor Sampling (in seconds) *</label>
-                            <input type="number" id="sensorSampling" class="form-control" placeholder="Enter sensor sampling interval in seconds" min="1" value="30" required>
+                            <label>PRF/Reporting Interval</label>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" id="prfNo" name="prfEnabled" value="NO" checked>
+                                    <label for="prfNo">NO</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="prfYes" name="prfEnabled" value="YES">
+                                    <label for="prfYes">YES</label>
+                                </div>
+                            </div>
+                            <div id="prfOptions" class="prf-options">
+                                <div class="form-row">
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="prfValue">PRF/Reporting Interval (seconds) *</label>
+                                            <input type="number" id="prfValue" class="form-control" placeholder="Enter PRF in seconds" min="300" value="300">
+                                            <div class="info-text">Minimum allowed value: 300 seconds</div>
+                                        </div>
+                                    </div>
+                                    <div class="form-col">
+                                        <div class="form-group">
+                                            <label for="sensorFreqValue">Sensor/Sample Frequency (seconds) *</label>
+                                            <input type="number" id="sensorFreqValue" class="form-control" placeholder="Enter sampling frequency" min="300" value="300">
+                                            <div class="info-text">Minimum allowed value: 300 seconds</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -482,12 +569,13 @@ function generateHTML() {
     </div>
     
     <script>
-        // Sample data for profiles (will be replaced with API data)
+        // Sample data for profiles
         let profiles = [
             {
                 id: 1,
                 profileName: "Default Shipping",
                 accountName: "Roambee_Engineering",
+                deviceType: "BSFlex",
                 wifi: "ON",
                 ble: "OFF",
                 ambient: "OFF",
@@ -495,36 +583,25 @@ function generateHTML() {
                 shock: "OFF",
                 shockCommand: "",
                 sensors: ["Temp"],
-                prf: 60,
-                sensorSampling: 30
+                prfEnabled: "NO",
+                prfValue: 300,
+                sensorFreqValue: 300
             },
             {
                 id: 2,
                 profileName: "High Sensitivity",
                 accountName: "Roambee_Engineering",
+                deviceType: "BSFlex",
                 wifi: "ON",
                 ble: "ON",
                 ambient: "MANUAL",
-                ambientCommand: "TRIGGER_AMBIENT_HIGH",
+                ambientCommand: "AT+LIGHT=1,200,500",
                 shock: "ON",
                 shockCommand: "",
                 sensors: ["Temp", "Hum"],
-                prf: 30,
-                sensorSampling: 15
-            },
-            {
-                id: 3,
-                profileName: "Cold Storage",
-                accountName: "Roambee_Engineering",
-                wifi: "OFF",
-                ble: "ON",
-                ambient: "OFF",
-                ambientCommand: "",
-                shock: "ON",
-                shockCommand: "",
-                sensors: ["Temp", "Amb"],
-                prf: 120,
-                sensorSampling: 60
+                prfEnabled: "YES",
+                prfValue: 300,
+                sensorFreqValue: 300
             }
         ];
         
@@ -544,6 +621,8 @@ function generateHTML() {
         const ambientManualCommand = document.getElementById('ambientManualCommand');
         const shockRadios = document.querySelectorAll('input[name="shock"]');
         const shockManualCommand = document.getElementById('shockManualCommand');
+        const prfRadios = document.querySelectorAll('input[name="prfEnabled"]');
+        const prfOptions = document.getElementById('prfOptions');
         
         // State
         let isEditing = false;
@@ -576,6 +655,21 @@ function generateHTML() {
             });
         });
         
+        // Toggle PRF options
+        prfRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'YES') {
+                    prfOptions.classList.add('active');
+                    document.getElementById('prfValue').required = true;
+                    document.getElementById('sensorFreqValue').required = true;
+                } else {
+                    prfOptions.classList.remove('active');
+                    document.getElementById('prfValue').required = false;
+                    document.getElementById('sensorFreqValue').required = false;
+                }
+            });
+        });
+        
         // Functions
         function showCreateForm() {
             isEditing = false;
@@ -601,6 +695,7 @@ function generateHTML() {
             // Populate form with profile data
             document.getElementById('profileName').value = profile.profileName;
             document.getElementById('accountName').value = profile.accountName;
+            document.getElementById('deviceType').value = profile.deviceType;
             
             // Set WiFi radio
             document.querySelector('input[name="wifi"][value="' + profile.wifi + '"]').checked = true;
@@ -631,9 +726,15 @@ function generateHTML() {
                 checkbox.checked = profile.sensors.includes(checkbox.value);
             });
             
-            // Set PRF and Sensor Sampling
-            document.getElementById('prf').value = profile.prf;
-            document.getElementById('sensorSampling').value = profile.sensorSampling;
+            // Set PRF options
+            document.querySelector('input[name="prfEnabled"][value="' + profile.prfEnabled + '"]').checked = true;
+            if (profile.prfEnabled === 'YES') {
+                prfOptions.classList.add('active');
+                document.getElementById('prfValue').value = profile.prfValue;
+                document.getElementById('sensorFreqValue').value = profile.sensorFreqValue;
+            } else {
+                prfOptions.classList.remove('active');
+            }
             
             tableView.classList.add('hidden');
             formView.classList.remove('hidden');
@@ -649,12 +750,17 @@ function generateHTML() {
             configProfileForm.reset();
             ambientManualCommand.classList.remove('active');
             shockManualCommand.classList.remove('active');
+            prfOptions.classList.remove('active');
             document.getElementById('ambientCommand').value = '';
             document.getElementById('shockCommand').value = '';
+            document.getElementById('prfValue').value = '300';
+            document.getElementById('sensorFreqValue').value = '300';
+            document.getElementById('deviceType').value = 'BSFlex';
             document.querySelector('input[name="wifi"][value="ON"]').checked = true;
             document.querySelector('input[name="ble"][value="OFF"]').checked = true;
             document.querySelector('input[name="ambient"][value="OFF"]').checked = true;
             document.querySelector('input[name="shock"][value="OFF"]').checked = true;
+            document.querySelector('input[name="prfEnabled"][value="NO"]').checked = true;
         }
         
         function handleFormSubmit(e) {
@@ -663,6 +769,7 @@ function generateHTML() {
             // Get form values
             const profileName = document.getElementById('profileName').value;
             const accountName = document.getElementById('accountName').value;
+            const deviceType = document.getElementById('deviceType').value;
             const wifi = document.querySelector('input[name="wifi"]:checked').value;
             const ble = document.querySelector('input[name="ble"]:checked').value;
             const ambient = document.querySelector('input[name="ambient"]:checked').value;
@@ -674,14 +781,28 @@ function generateHTML() {
             const sensorCheckboxes = document.querySelectorAll('input[name="sensor"]:checked');
             const sensors = Array.from(sensorCheckboxes).map(cb => cb.value);
             
-            const prf = parseInt(document.getElementById('prf').value);
-            const sensorSampling = parseInt(document.getElementById('sensorSampling').value);
+            const prfEnabled = document.querySelector('input[name="prfEnabled"]:checked').value;
+            const prfValue = prfEnabled === 'YES' ? parseInt(document.getElementById('prfValue').value) : 0;
+            const sensorFreqValue = prfEnabled === 'YES' ? parseInt(document.getElementById('sensorFreqValue').value) : 0;
+            
+            // Validate PRF values if enabled
+            if (prfEnabled === 'YES') {
+                if (prfValue < 300) {
+                    alert("PRF value must be at least 300 seconds");
+                    return;
+                }
+                if (sensorFreqValue < 300) {
+                    alert("Sensor/Sample Frequency value must be at least 300 seconds");
+                    return;
+                }
+            }
             
             // Create profile object
             const profileData = {
                 id: isEditing ? currentProfileId : profiles.length > 0 ? Math.max(...profiles.map(p => p.id)) + 1 : 1,
                 profileName,
                 accountName,
+                deviceType,
                 wifi,
                 ble,
                 ambient,
@@ -689,12 +810,12 @@ function generateHTML() {
                 shock,
                 shockCommand,
                 sensors,
-                prf,
-                sensorSampling
+                prfEnabled,
+                prfValue,
+                sensorFreqValue
             };
             
             // In a real application, you would make an API call here
-            // For now, we'll update the local array
             if (isEditing) {
                 // Update existing profile
                 const index = profiles.findIndex(p => p.id === currentProfileId);
@@ -706,7 +827,7 @@ function generateHTML() {
                 profiles.push(profileData);
             }
             
-            // Show success message (in real app, this would be based on API response)
+            // Show success message
             alert('Profile ' + (isEditing ? 'updated' : 'created') + ' successfully!');
             
             // Return to table view
@@ -730,51 +851,135 @@ function generateHTML() {
             }
         }
         
+        // Function to calculate sensor mask
+        function calculateSensorMask(sensors) {
+            let binaryString = '1111'; // BIT7, BIT6, BIT5, BIT4 (7=1, 6=1, 5=0, 4=1)
+            
+            // BIT3: Always 1
+            binaryString = '1' + binaryString;
+            
+            // BIT2: Humidity (1 if selected)
+            binaryString = (sensors.includes('Hum') ? '1' : '0') + binaryString;
+            
+            // BIT1: Temperature (1 if selected)
+            binaryString = (sensors.includes('Temp') ? '1' : '0') + binaryString;
+            
+            // BIT0: Ambient Light (1 if selected)
+            binaryString = (sensors.includes('Amb') ? '1' : '0') + binaryString;
+            
+            // Convert binary to decimal
+            return parseInt(binaryString, 2);
+        }
+        
         function generateCommandSet(profile) {
             const commands = [];
             
             // Add WiFi command
-            commands.push('WiFi: ' + (profile.wifi === 'ON' ? 'ENABLE_WIFI' : 'DISABLE_WIFI'));
+            if (profile.wifi === 'ON') {
+                commands.push('AT+WIFIENABLE=1,10');
+            } else {
+                commands.push('AT+WIFIENABLE=0,10');
+            }
             
             // Add BLE command
-            commands.push('BLE: ' + (profile.ble === 'ON' ? 'ENABLE_BLE' : 'DISABLE_BLE'));
+            if (profile.ble === 'ON') {
+                commands.push('AT+BTENABLE=1,30');
+            } else {
+                commands.push('AT+BTENABLE=0,30');
+            }
             
             // Add Ambient command
             if (profile.ambient === 'ON') {
-                commands.push('Ambient: ENABLE_AMBIENT_TRIGGER');
+                commands.push('AT+LIGHT=1,172,300');
+            } else if (profile.ambient === 'OFF') {
+                commands.push('AT+LIGHT=0,172,300');
             } else if (profile.ambient === 'MANUAL' && profile.ambientCommand) {
-                commands.push('Ambient: ' + profile.ambientCommand);
+                commands.push(profile.ambientCommand);
             }
             
             // Add Shock command
             if (profile.shock === 'ON') {
-                commands.push('Shock: ENABLE_SHOCK_TRIGGER');
+                commands.push('AT+MOTION=2,10,3600');
+                commands.push('AT+VIBPARAM=1,0,160');
+            } else if (profile.shock === 'OFF') {
+                commands.push('AT+VIBPARAM=0,0,160');
             } else if (profile.shock === 'MANUAL' && profile.shockCommand) {
-                commands.push('Shock: ' + profile.shockCommand);
+                commands.push(profile.shockCommand);
             }
             
-            // Add Sensor commands
-            profile.sensors.forEach(sensor => {
-                commands.push(sensor + ': ENABLE_SENSOR');
-            });
+            // Add Sensor command
+            if (profile.sensors.length > 0) {
+                const sensorMask = calculateSensorMask(profile.sensors);
+                commands.push('AT+SENSORMASK=' + sensorMask);
+            }
             
-            // Add PRF command
-            commands.push('PRF: SET_' + profile.prf + 'S');
-            
-            // Add Sensor Sampling command
-            commands.push('Sampling: SET_' + profile.sensorSampling + 'S');
+            // Add PRF commands if enabled
+            if (profile.prfEnabled === 'YES') {
+                if (profile.prfValue === profile.sensorFreqValue) {
+                    commands.push('AT+TIMEGAP=0,' + profile.prfValue + ',1,' + profile.prfValue);
+                    commands.push('AT+SAMPLEMODE=0,0');
+                } else {
+                    commands.push('AT+TIMEGAP=0,' + profile.prfValue + ',1,' + profile.sensorFreqValue);
+                    commands.push('AT+SAMPLEMODE=1,1');
+                }
+            }
             
             return commands;
         }
         
+        function generateConfigSet(profile) {
+            const configs = [];
+            
+            // Add WiFi config
+            configs.push('WiFi: ' + profile.wifi);
+            
+            // Add BLE config
+            configs.push('BLE: ' + profile.ble);
+            
+            // Add Ambient config
+            if (profile.ambient === 'MANUAL') {
+                configs.push('Ambient: Manual Command');
+            } else {
+                configs.push('Ambient: ' + profile.ambient);
+            }
+            
+            // Add Shock config
+            if (profile.shock === 'MANUAL') {
+                configs.push('Shock: Manual Command');
+            } else {
+                configs.push('Shock: ' + profile.shock);
+            }
+            
+            // Add Sensors config
+            if (profile.sensors.length > 0) {
+                configs.push('Sensors: ' + profile.sensors.join(', '));
+            } else {
+                configs.push('Sensors: None');
+            }
+            
+            // Add PRF config if enabled
+            if (profile.prfEnabled === 'YES') {
+                configs.push('PRF: ' + profile.prfValue + 's');
+                configs.push('Sample Freq: ' + profile.sensorFreqValue + 's');
+            } else {
+                configs.push('PRF: Disabled');
+            }
+            
+            // Add Device Type
+            configs.push('Device: ' + profile.deviceType);
+            
+            return configs;
+        }
+        
         function renderCommandSet(commands) {
             return commands.map(function(command) {
-                let className = 'command-tag';
-                if (command.includes('Ambient')) className += ' ambient';
-                else if (command.includes('Shock')) className += ' shock';
-                else if (command.includes('Temp') || command.includes('Hum') || command.includes('Amb')) className += ' sensor';
-                
-                return '<span class="' + className + '">' + command + '</span>';
+                return '<span class="command-tag">' + command + '</span>';
+            }).join('');
+        }
+        
+        function renderConfigSet(configs) {
+            return configs.map(function(config) {
+                return '<span class="config-tag">' + config + '</span>';
             }).join('');
         }
         
@@ -790,30 +995,17 @@ function generateHTML() {
             let tableHTML = '';
             
             profiles.forEach(function(profile) {
-                // Create configuration summary
-                let configSummary = 'WiFi: ' + profile.wifi + ', BLE: ' + profile.ble;
-                
-                if (profile.ambient !== 'OFF') {
-                    configSummary += ', Ambient: ' + profile.ambient;
-                }
-                
-                if (profile.shock !== 'OFF') {
-                    configSummary += ', Shock: ' + profile.shock;
-                }
-                
-                if (profile.sensors.length > 0) {
-                    configSummary += ', Sensors: ' + profile.sensors.join('/');
-                }
-                
-                configSummary += ', PRF: ' + profile.prf + 's, Sampling: ' + profile.sensorSampling + 's';
-                
                 // Generate command set
                 const commands = generateCommandSet(profile);
+                
+                // Generate config set
+                const configs = generateConfigSet(profile);
                 
                 tableHTML += '                    <tr>' +
                            '                        <td>' + profile.profileName + '</td>' +
                            '                        <td>' + profile.accountName + '</td>' +
-                           '                        <td>' + configSummary + '</td>' +
+                           '                        <td>' + profile.deviceType + '</td>' +
+                           '                        <td class="config-set">' + renderConfigSet(configs) + '</td>' +
                            '                        <td class="command-set">' + renderCommandSet(commands) + '</td>' +
                            '                        <td>' +
                            '                            <div class="action-buttons">' +
@@ -859,14 +1051,6 @@ function createConfigProfileApp() {
     return htmlContent;
 }
 
-// If running directly with Node.js, create the file
-if (require.main === module) {
-    createConfigProfileApp();
-}
-
-// Export the function for module systems
-module.exports = { generateHTML, createConfigProfileApp };
-
 // Start a simple HTTP server for Render
 const http = require('http');
 const PORT = process.env.PORT || 3000;
@@ -876,6 +1060,17 @@ const server = http.createServer((req, res) => {
     const html = generateHTML();
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end(html);
+  } else if (req.url === '/download') {
+    // Also create the HTML file for download
+    const htmlContent = generateHTML();
+    const outputPath = path.join(__dirname, 'CONFIG_PROFILE.html');
+    
+    fs.writeFileSync(outputPath, htmlContent);
+    
+    res.setHeader('Content-Disposition', 'attachment; filename=CONFIG_PROFILE.html');
+    res.setHeader('Content-Type', 'text/html');
+    const fileStream = fs.createReadStream(outputPath);
+    fileStream.pipe(res);
   } else {
     res.writeHead(404);
     res.end('Not found');
@@ -885,7 +1080,11 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log('HTML content will be served at the root path');
+  console.log(`Access the application at: http://localhost:${PORT}`);
   
   // Also create the HTML file
   createConfigProfileApp();
 });
+
+// Export the function for module systems
+module.exports = { generateHTML, createConfigProfileApp };
