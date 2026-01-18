@@ -598,8 +598,22 @@ function generateHTML() {
                 prfEnabled: "NO",
                 prfValue: 300,
                 sensorFreqValue: 300
-            }  sensorFreqValue: 300
-          
+            },
+            {
+                id: 2,
+                profileName: "High Sensitivity",
+                accountName: "Roambee_Engineering",
+                deviceType: "BSFlex",
+                gps: "ON",
+                wifi: "ON",
+                ble: "ON",
+                ambient: "ON",
+                shock: "ON",
+                sensors: ["Temp", "Hum", "Amb"],
+                prfEnabled: "YES",
+                prfValue: 300,
+                sensorFreqValue: 300
+            }
         ];
         
         // DOM Elements
