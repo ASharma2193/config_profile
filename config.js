@@ -1,8 +1,4 @@
 
-Ankita Sharma <ankitas2193@gmail.com>
-Mon 19 Jan, 00:55 (23 hours ago)
-to me
-
 // config.js - Complete Config Profile Management Application
 const fs = require('fs');
 const path = require('path');
